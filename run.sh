@@ -1,4 +1,4 @@
 #!/bin/bash
 mkdir -p .build
 cd .build
-cmake .. && cmake --build . && ./bin/aoc2025 "$@"
+cmake .. && cmake --build . && cd .. && .build/bin/aoc2025 "$@"
