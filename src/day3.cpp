@@ -23,39 +23,35 @@ size_t find_largest(const std::string& str, size_t start_idx, size_t end_idx) {
 int day3(const std::string& input, std::ostream& output) {
     auto lines = to_lines(input);
 
-    int total = 0;
+    long part1 = 0;
+    long part2 = 0;
 
     for (const auto& line : lines) {
         assert(line.size() > 2);
 
-        // Find the largest digit other than the last
-        size_t largest_idx = 0;
-        for (size_t i = 1; i < line.size() - 1; i++) {
-            if (line[i] > line[largest_idx]) {
-                largest_idx = i;
-            }
+        {
+            size_t first = find_largest(line, 0, line.size() - 1);
+            size_t second = find_largest(line, first + 1, line.size());
+            long val = (line[first] - '0') * 10 + line[second] - '0';
+            part1 += val;
         }
 
-        // Find the next largest digit after
-        size_t second_largest = largest_idx + 1;
-        for (size_t i = second_largest + 1; i < line.size(); i++) {
-            if (line[i] > line[second_largest]) {
-                second_largest = i;
+        {
+            size_t start_search_idx = 0;
+            long val = 0;
+            for (size_t i = 0; i < 12; i++) {
+                size_t next_digit_idx = find_largest(line, start_search_idx, line.size() - 11 + i);
+
+                val = val * 10 + line[next_digit_idx] - '0';
+
+                start_search_idx = next_digit_idx + 1;
             }
+            part2 += val;
         }
-
-        int val = (line[largest_idx] - '0') * 10 + line[second_largest] - '0';
-
-        size_t first = find_largest(line, 0, line.size() - 1);
-        size_t second = find_largest(line, first + 1, line.size());
-        int other_val = (line[first] - '0') * 10 + line[second] - '0';
-
-        ASSERT(val == other_val, "val: " << val << " other_val: " << other_val);
-
-        total += val;
     }
 
-    output << "Part 1: " << total << std::endl;
+    output << "Part 1: " << part1 << std::endl;
+    output << "Part 2: " << part2 << std::endl;
 
-    return 1;
+    return 0;
 }

@@ -1,4 +1,5 @@
 
+#include <exception>
 #include <iostream>
 #include <chrono>
 #include <vector>
@@ -11,8 +12,8 @@ int day2(const std::string&, std::ostream&);
 int day3(const std::string&, std::ostream&);
 
 int main(int argc, char* argv[]) {
-    if (argc != 3) {
-        std::cerr << "Invalid arguments. " << argv[0] << " <day_number> <input_file_path>" << std::endl;
+    if (argc != 3 && argc != 4) {
+        std::cerr << "Invalid arguments. " << argv[0] << " <day_number> <input_file_path> [timing_duration_seconds]" << std::endl;
         return 1;
     }
 
@@ -29,10 +30,25 @@ int main(int argc, char* argv[]) {
     }
 
     // Run it for a period and time it
-    auto target_duration = std::chrono::seconds(5);
-    std::vector<std::chrono::microseconds> times;
+    std::chrono::seconds target_duration;
+    if (argc == 4) {
+        try {
+            int val = atoi(argv[3]);
+            if (val <= 0) {
+                std::cerr << "Bad duration argument \"" << argv[3] << "\" (read as " << val << "). Must be a positive integer." << std::endl;
+                return 1;
+            }
+            target_duration = std::chrono::seconds(val);
+        } catch (std::exception& ex) {
+            std::cerr << "Failed to read duration argument " << argv[3] << ": " << ex.what() << std::endl;
+            return 1;
+        }
+    }
+    else {
+        target_duration = std::chrono::seconds(5);
+    }
 
-    auto start = std::chrono::high_resolution_clock::now();
+    std::vector<std::chrono::microseconds> times;
 
     std::ofstream quiet_output;
     quiet_output.setstate(std::ios_base::badbit);
@@ -41,6 +57,9 @@ int main(int argc, char* argv[]) {
 
     std::chrono::microseconds duration;
 
+    std::cout << "Running for " << target_duration << std::endl;
+
+    auto start = std::chrono::high_resolution_clock::now();
     do {
         auto local_start = std::chrono::high_resolution_clock::now();
         int result = fn(input, *current_output);
