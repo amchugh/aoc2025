@@ -2,7 +2,7 @@
 #include "my_util.h"
 
 // Read a file into a string for convenience.
-std::string to_string(const std::string& path) {
+std::string read_file_as_string(const std::string& path) {
     std::ifstream file(path);
     if (!file.is_open()) {
         throw std::runtime_error("failed to open file");

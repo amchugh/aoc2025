@@ -19,5 +19,5 @@
 #   define ASSERT(condition, message) do { } while (false)
 #endif
 
-std::string to_string(const std::string& path);
+std::string read_file_as_string(const std::string& path);
 std::vector<std::string> to_lines(const std::string& text);

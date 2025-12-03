@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
     }
 
     const int day_number = atoi(argv[1]);
-    const auto input = to_string(std::string(argv[2]));
+    const auto input = read_file_as_string(std::string(argv[2]));
 
     int (*fn)(const std::string&, std::ostream&);
     if (day_number == 1) fn = day1;
