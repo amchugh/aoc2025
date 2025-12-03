@@ -8,6 +8,7 @@
 
 int day1(const std::string&, std::ostream&);
 int day2(const std::string&, std::ostream&);
+int day3(const std::string&, std::ostream&);
 
 int main(int argc, char* argv[]) {
     if (argc != 3) {
@@ -21,6 +22,7 @@ int main(int argc, char* argv[]) {
     int (*fn)(const std::string&, std::ostream&);
     if (day_number == 1) fn = day1;
     else if (day_number == 2) fn = day2;
+    else if (day_number == 3) fn = day3;
     else {
         std::cerr << "Invalid arguments. Day " << day_number << " is not a valid day." << std::endl;
         return 1;
