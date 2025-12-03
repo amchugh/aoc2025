@@ -1,4 +1,5 @@
 #!/bin/bash
+BUILD_TYPE=${BUILD_TYPE:-Debug}
 mkdir -p .build
 cd .build
-cmake .. && cmake --build . && cd .. && .build/bin/aoc2025 "$@"
+cmake .. -DCMAKE_BUILD_TYPE="$BUILD_TYPE" && cmake --build . && cd .. && .build/bin/aoc2025 "$@"

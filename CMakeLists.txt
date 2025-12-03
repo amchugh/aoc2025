@@ -15,8 +15,11 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
 endif()
 
+# Add common compiler flags
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Wno-vla-cxx-extension")
+
 # Add compiler flags for debug builds
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall -Wextra -Wpedantic")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 
 # Collect source files

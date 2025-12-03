@@ -1,4 +1,5 @@
 
+#include "my_util.h"
 #include <cassert>
 #include <cstdlib>
 #include <string>
@@ -22,22 +23,26 @@ int is_symmetric(const std::string& x) {
 }
 
 int only_repeats(const std::string& x) {
+    std::string::const_iterator itrs[x.size()];
+
     // Let's brute force
     for (size_t n = 2; n <= x.size(); n++) {
         // Skip if not cleanly divisible.
         if (x.size() % n != 0) continue;
         size_t individual_size = x.size() / n;
 
-        // Get all of the substrs with this size
-        std::vector<std::string> substrs;
-        for (size_t start_idx = 0; start_idx < x.size(); start_idx += individual_size) {
-            substrs.push_back(x.substr(start_idx, individual_size));
+        // Get iterators to all distinct parts
+        for (size_t idx = 0; idx < n; idx++) {
+            itrs[idx] = x.begin() + (idx * individual_size);
         }
-        assert(substrs.size() == n);
 
-        // Now check if they all match
-        for (size_t idx = 1; idx < n; idx++) {
-            if (substrs[0] != substrs[idx]) goto nomatch;
+        // Now, iterate all of them until the last hits the end or they are different
+        while (itrs[n - 1] != x.end()) {
+            for (size_t idx = 1; idx < n; idx++) {
+                if (*itrs[0] != *itrs[idx]) goto nomatch;
+                ++itrs[idx];
+            }
+            ++itrs[0];
         }
         return 1;
 
@@ -47,7 +52,7 @@ int only_repeats(const std::string& x) {
     return 0;
 }
 
-int day2(const std::string& input) {
+int day2(const std::string& input, std::ostream& output) {
     size_t part1 = 0;
     size_t part2 = 0;
 
@@ -65,17 +70,37 @@ int day2(const std::string& input) {
         size_t start = std::stol(first);
         size_t end = std::stol(second);
 
-        for (size_t i = start; i <= end; i++) {
-            const std::string x = std::to_string(i);
-            part1 += is_symmetric(x) * i;
-            part2 += only_repeats(x) * i;
+        // We can be tricky
+        size_t n = end - start;
+        std::string current = first;
+        for (size_t i = 0; i < n; i++) {
+            part1 += is_symmetric(current) * (start + i);
+            part2 += only_repeats(current) * (start + i);
+
+            // Now increment the string directly.
+            int idx = current.size() - 1;
+            while (idx >= 0) {
+                current[idx] += 1;
+                if (current[idx] <= '9') goto next_number;
+
+                assert(current[idx] == '9' + 1);
+
+                current[idx] = '0';
+                idx--;
+            }
+            assert(idx == -1);
+            // Need to alloc more :(
+            current[0] = '1';
+            current.push_back('0');
+
+            next_number:;
         }
 
         idx = second_end + 1;
     }
 
-    std::cout << "Part 1: " << part1 << std::endl; // 29940924880
-    std::cout << "Part 2: " << part2 << std::endl; // 48631958998
+    output << "Part 1: " << part1 << std::endl; // 29940924880
+    output << "Part 2: " << part2 << std::endl; // 48631958998
 
     return 0;
 }

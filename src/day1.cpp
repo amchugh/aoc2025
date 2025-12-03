@@ -5,7 +5,7 @@
 
 #include "my_util.h"
 
-int day1(const std::string& input) {
+int day1(const std::string& input, std::ostream& output) {
     const auto lines = to_lines(input);
 
     size_t lands_on_zero = 0;
@@ -45,8 +45,8 @@ int day1(const std::string& input) {
         ASSERT(position < 100 && position >= 0, "position: " << position);
     }
 
-    std::cout << "Part 1: " << lands_on_zero << std::endl;                      // 1182
-    std::cout << "Part 2: " << _extra_rotations + _rotations << std::endl;      // 6907
+    output << "Part 1: " << lands_on_zero << std::endl;                      // 1182
+    output << "Part 2: " << _extra_rotations + _rotations << std::endl;      // 6907
 
     return 0;
 }
