@@ -1,6 +1,9 @@
 
 #include "my_util.h"
 
+#include <fstream>
+#include <sstream>
+
 // Read a file into a string for convenience.
 std::string read_file_as_string(const std::string& path) {
     std::ifstream file(path);

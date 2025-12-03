@@ -1,9 +1,10 @@
 
-#include "my_util.h"
 #include <cassert>
 #include <cstdlib>
 #include <string>
 #include <iostream>
+
+#include "my_util.h"
 
 int is_symmetric(const std::string& x) {
     // Not symmetric if odd-lengthed
@@ -83,7 +84,7 @@ int day2(const std::string& input, std::ostream& output) {
                 current[idx] += 1;
                 if (current[idx] <= '9') goto next_number;
 
-                assert(current[idx] == '9' + 1);
+                ASSERT(current[idx] == '9' + 1, current[idx]);
 
                 current[idx] = '0';
                 idx--;
