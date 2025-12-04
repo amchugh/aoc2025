@@ -8,7 +8,7 @@
 std::string read_file_as_string(const std::string& path) {
     std::ifstream file(path);
     if (!file.is_open()) {
-        throw std::runtime_error("failed to open file");
+        throw std::runtime_error(std::format("failed to open file \"{}\"", path.c_str()));
     }
 
     std::stringstream buffer;

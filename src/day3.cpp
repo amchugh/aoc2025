@@ -50,8 +50,8 @@ int day3(const std::string& input, std::ostream& output) {
         }
     }
 
-    output << "Part 1: " << part1 << std::endl;
-    output << "Part 2: " << part2 << std::endl;
+    output << "Part 1: " << part1 << std::endl; // 17244
+    output << "Part 2: " << part2 << std::endl; // 171435596092638
 
     return 0;
 }

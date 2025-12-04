@@ -11,20 +11,30 @@
 int day1(const std::string&, std::ostream&);
 int day2(const std::string&, std::ostream&);
 int day3(const std::string&, std::ostream&);
+int day4(const std::string&, std::ostream&);
 
 int main(int argc, char* argv[]) {
-    if (argc != 3 && argc != 4) {
-        std::cerr << "Invalid arguments. " << argv[0] << " <day_number> <input_file_path> [timing_duration_seconds]" << std::endl;
+    if (argc != 2 && argc != 3 && argc != 4) {
+        std::cerr << "Invalid arguments. " << argv[0] << " <day_number> [input_file_path] [timing_duration_seconds]" << std::endl;
         return 1;
     }
 
     const int day_number = atoi(argv[1]);
-    const auto input = read_file_as_string(std::string(argv[2]));
+
+    std::string input;
+    if (argc == 2) {
+        // Read from default
+        std::string path = std::format("resources/day{}.txt", day_number);
+        input = read_file_as_string(path);
+    } else {
+        input = read_file_as_string(std::string(argv[2]));
+    }
 
     int (*fn)(const std::string&, std::ostream&);
     if (day_number == 1) fn = day1;
     else if (day_number == 2) fn = day2;
     else if (day_number == 3) fn = day3;
+    else if (day_number == 4) fn = day4;
     else {
         std::cerr << "Invalid arguments. Day " << day_number << " is not a valid day." << std::endl;
         return 1;
