@@ -20,12 +20,12 @@ std::string read_file_as_string(const std::string& path) {
 
 std::vector<std::string> to_lines(const std::string& text) {
     std::vector<std::string> result;
-    size_t pos = 0;
 
+    size_t pos = 0;
     while (pos != text.size()) {
         const auto next = text.find('\n', pos);
         if (next == std::string::npos) {
-            // add the end, if it's not a blank line
+            // This works because I always add newlines to the end of my files :)
             break;
         }
         const std::string part(text.begin() + pos, text.begin() + next);
