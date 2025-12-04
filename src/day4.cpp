@@ -7,9 +7,9 @@ int safe_get(const std::string& input, int width, int height, int x, int y) {
     return input[y * (width + 1) + x] == '@';
 }
 
-int reduce(const std::string& input, std::string& output, int width, int height) {
+int reduce(const std::string* input, std::string* output, int width, int height) {
     // Clone
-    output = input;
+    *output = *input;
 
     size_t count = 0;
     for (int y = 0; y < height; y++) {
@@ -19,10 +19,10 @@ int reduce(const std::string& input, std::string& output, int width, int height)
             for (int dy = -1; dy <= 1; dy++)
                 for (int dx = -1; dx <= 1; dx++)
                     if (dy != 0 || dx != 0)
-                        adjacent += safe_get(input, width, height, x + dx, y + dy);
+                        adjacent += safe_get(*input, width, height, x + dx, y + dy);
 
-            if (safe_get(input, width, height, x, y) && adjacent < 4) {
-                output[y * (width + 1) + x] = '.';
+            if (safe_get(*input, width, height, x, y) && adjacent < 4) {
+                (*output)[y * (width + 1) + x] = '.';
                 ++count;
             }
         }
@@ -35,8 +35,12 @@ int day4(const std::string& input, std::ostream& output) {
     int width = input.find('\n');
     int height = (input.size() / width) - 1;
 
-    std::string current, next;
-    current = input;
+    std::string a, b;
+    a = input;
+
+    std::string *current, *next;
+    current = &a;
+    next = &b;
 
     size_t part1 = reduce(current, next, width, height);
 
@@ -44,7 +48,7 @@ int day4(const std::string& input, std::ostream& output) {
     size_t reduced_last = part1;
     while (reduced_last > 0) {
         part2 += reduced_last;
-        current = next;
+        std::swap(current, next);
         reduced_last = reduce(current, next, width, height);
     }
 

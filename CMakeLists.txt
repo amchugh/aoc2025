@@ -19,8 +19,8 @@ endif()
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Wno-vla-cxx-extension")
 
 # Add compiler flags for debug builds
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "-g3 -O0")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -g")
 
 # Collect source files
 file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
