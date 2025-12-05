@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
+#include <cmath>
 
 #include "my_util.h"
 
@@ -58,12 +59,21 @@ int profile_all_days(auto target_duration) {
     }
     auto avg_time = std::chrono::microseconds(total / times.size());
 
+    // Calculate standard deviation
+    double variance_sum = 0.0;
+    for (const auto& t : times) {
+        double diff = t.count() - avg_time.count();
+        variance_sum += diff * diff;
+    }
+    double std_dev = std::sqrt(variance_sum / times.size());
+
     const size_t iterations = times.size();
     std::cout << "Benchmark (" << iterations << " runs in " << std::chrono::duration_cast<std::chrono::milliseconds>(duration) << "):" << std::endl;
     std::cout << "  Min: " << min_time.count() / 1000. << "ms" << std::endl;
     std::cout << "  Max: " << max_time.count() / 1000. << "ms" << std::endl;
     std::cout << "  Avg: " << avg_time.count() / 1000. << "ms" << std::endl;
     std::cout << "  Median: " << median_time.count() / 1000. << "ms" << std::endl;
+    std::cout << "  Std Dev: " << std_dev / 1000. << "ms" << std::endl;
 
     delete[] inputs;
     return 0;
@@ -168,12 +178,21 @@ int main(int argc, char* argv[]) {
     }
     auto avg_time = std::chrono::microseconds(total / times.size());
 
+    // Calculate standard deviation
+    double variance_sum = 0.0;
+    for (const auto& t : times) {
+        double diff = t.count() - avg_time.count();
+        variance_sum += diff * diff;
+    }
+    double std_dev = std::sqrt(variance_sum / times.size());
+
     const size_t iterations = times.size();
     std::cout << "Benchmark (" << iterations << " runs in " << std::chrono::duration_cast<std::chrono::milliseconds>(duration) << "):" << std::endl;
     std::cout << "  Min: " << min_time.count() / 1000. << "ms" << std::endl;
     std::cout << "  Max: " << max_time.count() / 1000. << "ms" << std::endl;
     std::cout << "  Avg: " << avg_time.count() / 1000. << "ms" << std::endl;
     std::cout << "  Median: " << median_time.count() / 1000. << "ms" << std::endl;
+    std::cout << "  Std Dev: " << std_dev / 1000. << "ms" << std::endl;
 
     return 0;
 }
