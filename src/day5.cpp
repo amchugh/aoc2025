@@ -32,6 +32,7 @@ std::vector<range_t> parse_ranges(std::vector<std::string>::const_iterator& itr)
         const auto& line = *itr;
         const auto middle = line.find('-');
         range_t range { .begin = atol(line.data()), .end = atol(line.data() + middle + 1) };
+        assert(range.begin > 0 && range.end > 0);
 
         size_t candidate_reduce_idx = 0;
         for (; candidate_reduce_idx < ranges.size(); candidate_reduce_idx++) {
