@@ -12,6 +12,9 @@ struct range_t {
     bool overlap(const range_t& other) const {
         return (begin <= other.begin && end >= other.begin)
             || (begin <= other.end   && end >= other.end  )
+            // Not quite sure why we need to check both sides...
+            // perhaps "this" can be contained by other?
+            // I think that's the failure mode.
             || (other.begin <= begin && other.end >= begin)
             || (other.begin <= end   && other.end >= end  );
     }
@@ -73,16 +76,19 @@ std::vector<range_t> parse_ranges(std::vector<std::string>::const_iterator& itr)
 }
 
 int day5(const std::string& input, std::ostream& output) {
+    // to_lines is 20% of execution time lmao. We could remove this, or transform it to an iterator.
     const auto lines = to_lines(input);
 
     // Read the ranges
     auto itr = lines.begin();
+    // This function is another 20%
     std::vector<range_t> ranges = parse_ranges(itr);
     assert(itr != lines.end());
 
     // Now the product ids
     size_t part1 = 0;
     while (itr != lines.end()) {
+        // This atol is slow too, but no real way around it.
         const auto id = atol(itr->data());
 
         for (const auto& range : ranges) {
