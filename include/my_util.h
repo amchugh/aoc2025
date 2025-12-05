@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 #ifndef NDEBUG
 #   define ASSERT(condition, message) \
