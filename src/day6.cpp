@@ -140,5 +140,5 @@ int day6(const std::string& input, std::ostream& output) {
     output << "Part 1: " << part1 << std::endl; // 4580995422905
     output << "Part 2: " << part2 << std::endl; // 10875057285868
 
-    return 1;
+    return 0;
 }

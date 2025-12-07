@@ -22,6 +22,11 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Wno-vla-cxx-extension")
 set(CMAKE_CXX_FLAGS_DEBUG "-g3 -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -g")
 
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -fsanitize=address")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -fsanitize=address")
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
+set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=address")
+
 # Collect source files
 file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
