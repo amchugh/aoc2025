@@ -197,11 +197,11 @@ int main(int argc, char* argv[]) {
 
     const size_t iterations = times.size();
     std::cout << "Benchmark (" << iterations << " runs in " << std::chrono::duration_cast<std::chrono::milliseconds>(duration) << "):" << std::endl;
-    std::cout << "  Min: " << min_time.count() / 1000. << "ms" << std::endl;
-    std::cout << "  Max: " << max_time.count() / 1000. << "ms" << std::endl;
-    std::cout << "  Avg: " << avg_time.count() / 1000. << "ms" << std::endl;
-    std::cout << "  Median: " << median_time.count() / 1000. << "ms" << std::endl;
-    std::cout << "  Std Dev: " << std_dev / 1000. << "ms" << std::endl;
+    std::cout << "  Min: " << min_time << std::endl;
+    std::cout << "  Max: " << max_time << std::endl;
+    std::cout << "  Avg: " << avg_time << std::endl;
+    std::cout << "  Median: " << median_time << std::endl;
+    std::cout << "  Std Dev: " << std_dev << "us" << std::endl;
 
     return 0;
 }

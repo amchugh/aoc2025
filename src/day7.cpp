@@ -14,8 +14,9 @@ int day7(const std::string& input, std::ostream& output) {
 
     // Find the start
     for (size_t col = 0; col < width; col++) {
-        if (lines[0][col] == 'S') beams[col] = 1;
-        else beams[col] = 0;
+        beams[col] = lines[0][col] == 'S';
+        // if (lines[0][col] == 'S') beams[col] = 1;
+        // else beams[col] = 0;
     }
 
     size_t part1 = 0;
@@ -28,7 +29,10 @@ int day7(const std::string& input, std::ostream& output) {
         // Scan across
         for (size_t idx = 0; idx < width; idx++) {
             // If there is a beam above, we either split or copy down
-            if (beams[idx]) {
+            // Edit:: actually far faster to run this no matter what
+            // as if `!beams[idx]`, then adding it has no effect.
+            // branchless ftw.
+            // if (beams[idx]) {
                 if (line[idx] == '^') {
                     next_beams[idx - 1] += beams[idx];
                     next_beams[idx + 1] += beams[idx];
@@ -36,7 +40,7 @@ int day7(const std::string& input, std::ostream& output) {
                 } else {
                     next_beams[idx] += beams[idx];
                 }
-            }
+            // }
             // Otherwise, we do nothing
 
             // (Make sure there are no adjacent beams)
@@ -45,14 +49,6 @@ int day7(const std::string& input, std::ostream& output) {
 
         // Copy next
         memcpy(beams, next_beams, width * sizeof(long));
-
-        // size_t futures = 0;
-        // for (size_t i = 0; i < width; i++) {
-        //     if (beams[i] == 0) output << '.';
-        //     else output << '|';
-        //     futures += beams[i];
-        // }
-        // output << " paths: " << futures << std::endl;
     }
 
     size_t part2 = 0;
