@@ -14,9 +14,11 @@ int day2(const std::string&, std::ostream&);
 int day3(const std::string&, std::ostream&);
 int day4(const std::string&, std::ostream&);
 int day5(const std::string&, std::ostream&);
+int day6(const std::string&, std::ostream&);
+int day7(const std::string&, std::ostream&);
 
 int profile_all_days(auto target_duration) {
-    constexpr size_t NUM_DAYS = 5;
+    constexpr size_t NUM_DAYS = 7;
     std::string* inputs = new std::string[NUM_DAYS];
     for (size_t i = 0; i < NUM_DAYS; i++) {
         inputs[i] = read_file_as_string(std::format("resources/day{}.txt", i + 1));
@@ -39,6 +41,8 @@ int profile_all_days(auto target_duration) {
         day3(inputs[2], quiet_output);
         day4(inputs[3], quiet_output);
         day5(inputs[4], quiet_output);
+        day6(inputs[5], quiet_output);
+        day7(inputs[6], quiet_output);
 
         auto end = std::chrono::high_resolution_clock::now();
 
@@ -119,6 +123,8 @@ int main(int argc, char* argv[]) {
     else if (day_number == 3) fn = day3;
     else if (day_number == 4) fn = day4;
     else if (day_number == 5) fn = day5;
+    else if (day_number == 6) fn = day6;
+    else if (day_number == 7) fn = day7;
     else {
         std::cerr << "Invalid arguments. Day " << day_number << " is not a valid day." << std::endl;
         return 1;
