@@ -18,14 +18,16 @@ int safe_matches(const std::vector<std::string>& grid, int x, int y, char lookin
 }
 
 typedef char direction_t;
+char DIRECTIONS[] = ">V<^";
 // 0 = right, 1 = down, 2 = left, 3 = up
 
 struct Location {
     size_t x;
     size_t y;
+    direction_t direction = 0;
 
     bool operator==(const Location& other) const {
-        return x == other.x && y == other.y;
+        return x == other.x && y == other.y && direction == other.direction;
     }
 };
 
@@ -36,7 +38,73 @@ struct Region {
     char repr;
 };
 
-void walk(const std::vector<std::string>& grid, int cx, int cy, char looking, size_t& perimeter, size_t& turns);
+void walk(
+    const std::vector<std::string>& grid,
+    const std::vector<Location>& in_region,
+    int x, int y,
+    char looking,
+    size_t& perimeter,
+    size_t& turns,
+    std::vector<Location>& visited
+) {
+    // We will by default be moving right. We always move clockwise.
+    direction_t direction = 0;
+    int cx = x;
+    int cy = y;
+
+    do {
+        Location current(cx, cy, direction);
+        ASSERT(std::find(visited.begin(), visited.end(), current) == visited.end(), "Already visited: (" << cx << ", " << cy << ", " << DIRECTIONS[direction] << ")");
+        ASSERT(std::find(in_region.begin(), in_region.end(), Location(cx, cy)) != in_region.end(), "Current position: (" << cx << ", " << cy << ") looking for " << looking);
+
+        perimeter++;
+        std::cout << "Visited (" << cx << ", " << cy << ", " << DIRECTIONS[direction] << ")" << std::endl;
+        visited.push_back(current);
+
+        int inside_ahead_x = cx;
+        int inside_ahead_y = cy;
+        if (direction == 0) { inside_ahead_x++; }
+        else if (direction == 1) { inside_ahead_y++; }
+        else if (direction == 2) { inside_ahead_x--; }
+        else { inside_ahead_y--; }
+        bool inside_ahead_in_region = std::find(in_region.begin(), in_region.end(), Location(inside_ahead_x, inside_ahead_y)) != in_region.end();
+
+        int outside_ahead_x = cx;
+        int outside_ahead_y = cy;
+        if (direction == 0) { outside_ahead_x++; outside_ahead_y--; }
+        else if (direction == 1) { outside_ahead_y++; outside_ahead_x++; }
+        else if (direction == 2) { outside_ahead_x--; outside_ahead_y++; }
+        else { outside_ahead_y--; outside_ahead_x--; }
+        bool outside_ahead_in_region = std::find(in_region.begin(), in_region.end(), Location(outside_ahead_x, outside_ahead_y)) != in_region.end();
+
+        // Is there a wall in our way?
+        if (outside_ahead_in_region && in_bounds(grid, outside_ahead_x, outside_ahead_y)) {
+            turns++;
+            // Update the location. We go forward and left once
+            if (direction == 0) { cx++; cy--; }
+            else if (direction == 1) { cy++; cx++; }
+            else if (direction == 2) { cx--; cy++; }
+            else { cy--; cx--; }
+            // Rotate outside
+            direction = (direction + 3) % 4;
+        }
+        // Otherwise, do we need to round an exterior corner?
+        else if (!inside_ahead_in_region) {
+            turns++;
+            // Rotate inside
+            direction = (direction + 1) % 4;
+            // Location doesn't need to be updated because we are spinning.
+        }
+        // March forward
+        else {
+            if (direction == 0) cx++;
+            else if (direction == 1) cy++;
+            else if (direction == 2) cx--;
+            else cy--;
+        }
+
+    } while (!(cx == static_cast<int>(x) && cy == static_cast<int>(y) && direction == 0));
+}
 
 int day12_2024(const std::string& input, std::ostream& output) {
     output << input << std::endl;
@@ -124,66 +192,34 @@ int day12_2024(const std::string& input, std::ostream& output) {
                 size_t turns = 0;
                 size_t perimeter = 0;
 
-                // We will by default be moving right. We always move clockwise.
-                direction_t direction = 0;
+                std::vector<Location> visited;
 
-                int cx = x;
-                int cy = y;
-
-                do {
-                    ASSERT(std::find(in_region.begin(), in_region.end(), Location(cx, cy)) != in_region.end(), "Current position: (" << cx << ", " << cy << ") looking for " << looking);
-                    perimeter++;
-
-                    int inside_ahead_x = cx;
-                    int inside_ahead_y = cy;
-                    if (direction == 0) { inside_ahead_x++; }
-                    else if (direction == 1) { inside_ahead_y++; }
-                    else if (direction == 2) { inside_ahead_x--; }
-                    else { inside_ahead_y--; }
-                    bool inside_ahead_in_region = std::find(in_region.begin(), in_region.end(), Location(inside_ahead_x, inside_ahead_y)) != in_region.end();
-
-                    int outside_ahead_x = cx;
-                    int outside_ahead_y = cy;
-                    if (direction == 0) { outside_ahead_x++; outside_ahead_y--; }
-                    else if (direction == 1) { outside_ahead_y++; outside_ahead_x++; }
-                    else if (direction == 2) { outside_ahead_x--; outside_ahead_y++; }
-                    else { outside_ahead_y--; outside_ahead_x--; }
-                    bool outside_ahead_in_region = std::find(in_region.begin(), in_region.end(), Location(outside_ahead_x, outside_ahead_y)) != in_region.end();
-
-                    // Is there a wall in our way?
-                    if (outside_ahead_in_region && in_bounds(grid, outside_ahead_x, outside_ahead_y)) {
-                        turns++;
-                        // Update the location. We go forward and left once
-                        if (direction == 0) { cx++; cy--; }
-                        else if (direction == 1) { cy++; cx++; }
-                        else if (direction == 2) { cx--; cy++; }
-                        else { cy--; cx--; }
-                        // Rotate outside
-                        direction = (direction + 3) % 4;
-                    }
-                    // Otherwise, do we need to round an exterior corner?
-                    else if (!inside_ahead_in_region) {
-                        turns++;
-                        // Rotate inside
-                        direction = (direction + 1) % 4;
-                        // Location doesn't need to be updated because we are spinning.
-                    }
-                    // March forward
-                    else {
-                        if (direction == 0) cx++;
-                        else if (direction == 1) cy++;
-                        else if (direction == 2) cx--;
-                        else cy--;
-                    }
-
-                } while (!(cx == static_cast<int>(x) && cy == static_cast<int>(y) && direction == 0));
-
-                if (is_surrounded) {
-                    // We need to go update the region we surround with our turns and perimeter as it encloses us
-                    assert(surrounded != static_cast<size_t>(-1));
-                    regions[surrounded].perimeter += perimeter;
-                    regions[surrounded].turns += turns;
+                // We will try every location
+                for (const auto& location: in_region) {
+                    output << "Considering location: " << location.x << ", " << location.y << std::endl;
+                    // If we have already visited this wall, ignore
+                   if (std::find(visited.begin(), visited.end(), location) != visited.end()) continue;
+                   // If this "wall" doesn't have an acceptable space above it, ignore
+                   if (std::find(in_region.begin(), in_region.end(), Location(location.x, location.y - 1)) == in_region.end()) {
+                       output << "Walking... for " << looking << std::endl;
+                       walk(
+                           grid,
+                           in_region,
+                           location.x, location.y,
+                           looking,
+                           perimeter,
+                           turns,
+                           visited
+                       );
+                   }
                 }
+
+                // if (is_surrounded) {
+                //     // We need to go update the region we surround with our turns and perimeter as it encloses us
+                //     assert(surrounded != static_cast<size_t>(-1));
+                //     regions[surrounded].perimeter += perimeter;
+                //     regions[surrounded].turns += turns;
+                // }
 
                 // Add the region
                 regions.push_back({.area = area, .perimeter = perimeter, .turns = turns, .repr = looking});
