@@ -23,6 +23,10 @@ typedef char direction_t;
 struct Location {
     size_t x;
     size_t y;
+
+    bool operator==(const Location& other) const {
+        return x == other.x && y == other.y;
+    }
 };
 
 struct Region {
@@ -53,22 +57,70 @@ int day12_2024(const std::string& input, std::ostream& output) {
         for (size_t x = 0; x < grid[y].size(); x++) {
             char looking = grid[y][x];
             if (looking != '.') {
-                // .>..
-                // .OO.
-                // ..O.
-                // ....
+                // While we do this flood fill, discover if we are surrounded by the same idx everywhere
+                size_t surrounded = -1;
+                bool is_surrounded = true;
 
-                // ..>.
-                // .OO.
-                // ..O.
-                // ....
+                // Now we can flood-fill and figure out the area
+                size_t area = 0;
+                std::vector<Location> stack;
+                std::vector<Location> in_region;
+                stack.push_back({x, y});
+                while (!stack.empty()) {
+                    const Location current = stack.back();
+                    stack.pop_back();
+                    size_t current_x = current.x;
+                    size_t current_y = current.y;
+                    if (grid[current_y][current_x] == '.') continue;
+                    assert(grid[current_y][current_x] == looking);
 
-                // ....
-                // .>O.
-                // .OO.
-                // ....
+                    in_region.push_back(current);
 
-                // Now that we have the area, we will calculate the perimeter
+                    grid[current_y][current_x] = '.';
+                    region_map[current_y * grid_width + current_x] = regions.size();
+                    assert(surrounded != regions.size());
+
+                    area += 1;
+
+                    if (in_bounds(grid, current_x - 1, current_y)) {
+                        if (grid[current_y][current_x - 1] == looking) { stack.push_back({current_x - 1, current_y}); }
+                        else {
+                            if (region_map[current_y * grid_width + current_x - 1] != regions.size()) {
+                                if (surrounded == static_cast<size_t>(-1)) { surrounded = region_map[current_y * grid_width + current_x - 1]; }
+                                else { is_surrounded = is_surrounded && region_map[current_y * grid_width + current_x - 1] == surrounded; }
+                            }
+                        }
+                    } else { is_surrounded = false; }
+                    if (in_bounds(grid, current_x + 1, current_y)) {
+                        if (grid[current_y][current_x + 1] == looking) { stack.push_back({current_x + 1, current_y}); }
+                        else {
+                            if (region_map[current_y * grid_width + current_x + 1] != regions.size()) {
+                                if (surrounded == static_cast<size_t>(-1)) { surrounded = region_map[current_y * grid_width + current_x + 1]; }
+                                else { is_surrounded = is_surrounded && region_map[current_y * grid_width + current_x + 1] == surrounded; }
+                            }
+                        }
+                    } else { is_surrounded = false; }
+                    if (in_bounds(grid, current_x, current_y - 1)) {
+                        if (grid[current_y - 1][current_x] == looking) { stack.push_back({current_x, current_y - 1}); }
+                        else {
+                            if (region_map[(current_y - 1) * grid_width + current_x] != regions.size()) {
+                                if (surrounded == static_cast<size_t>(-1)) { surrounded = region_map[(current_y - 1) * grid_width + current_x]; }
+                                else { is_surrounded = is_surrounded && region_map[(current_y - 1) * grid_width + current_x] == surrounded; }
+                            }
+                        }
+                    } else { is_surrounded = false; }
+                    if (in_bounds(grid, current_x, current_y + 1)) {
+                        if (grid[current_y + 1][current_x] == looking) { stack.push_back({current_x, current_y + 1}); }
+                        else {
+                            if (region_map[(current_y + 1) * grid_width + current_x] != regions.size()) {
+                                if (surrounded == static_cast<size_t>(-1)) { surrounded = region_map[(current_y + 1) * grid_width + current_x]; }
+                                else { is_surrounded = is_surrounded && region_map[(current_y + 1) * grid_width + current_x] == surrounded; }
+                            }
+                        }
+                    } else { is_surrounded = false; }
+                }
+
+                // Calculate the perimeter
                 size_t turns = 0;
                 size_t perimeter = 0;
 
@@ -79,27 +131,27 @@ int day12_2024(const std::string& input, std::ostream& output) {
                 int cy = y;
 
                 do {
-                    assert(grid[cy][cx] == looking);
+                    ASSERT(std::find(in_region.begin(), in_region.end(), Location(cx, cy)) != in_region.end(), "Current position: (" << cx << ", " << cy << ") looking for " << looking);
                     perimeter++;
 
                     int inside_ahead_x = cx;
                     int inside_ahead_y = cy;
-
                     if (direction == 0) { inside_ahead_x++; }
                     else if (direction == 1) { inside_ahead_y++; }
                     else if (direction == 2) { inside_ahead_x--; }
                     else { inside_ahead_y--; }
+                    bool inside_ahead_in_region = std::find(in_region.begin(), in_region.end(), Location(inside_ahead_x, inside_ahead_y)) != in_region.end();
 
                     int outside_ahead_x = cx;
                     int outside_ahead_y = cy;
-
                     if (direction == 0) { outside_ahead_x++; outside_ahead_y--; }
                     else if (direction == 1) { outside_ahead_y++; outside_ahead_x++; }
                     else if (direction == 2) { outside_ahead_x--; outside_ahead_y++; }
                     else { outside_ahead_y--; outside_ahead_x--; }
+                    bool outside_ahead_in_region = std::find(in_region.begin(), in_region.end(), Location(outside_ahead_x, outside_ahead_y)) != in_region.end();
 
                     // Is there a wall in our way?
-                    if (safe_matches(grid, outside_ahead_x, outside_ahead_y, looking)) {
+                    if (outside_ahead_in_region && in_bounds(grid, outside_ahead_x, outside_ahead_y)) {
                         turns++;
                         // Update the location. We go forward and left once
                         if (direction == 0) { cx++; cy--; }
@@ -110,7 +162,7 @@ int day12_2024(const std::string& input, std::ostream& output) {
                         direction = (direction + 3) % 4;
                     }
                     // Otherwise, do we need to round an exterior corner?
-                    else if (!safe_matches(grid, inside_ahead_x, inside_ahead_y, looking)) {
+                    else if (!inside_ahead_in_region) {
                         turns++;
                         // Rotate inside
                         direction = (direction + 1) % 4;
@@ -124,59 +176,7 @@ int day12_2024(const std::string& input, std::ostream& output) {
                         else cy--;
                     }
 
-                } while (!(cx == x && cy == y && direction == 0));
-
-                // While we do this flood fill, discover if we are surrounded by the same idx everywhere
-                size_t surrounded = -1;
-                bool is_surrounded = true;
-
-                // Now we can flood-fill and figure out the area
-                size_t area = 0;
-                std::vector<Location> stack;
-                stack.push_back({x, y});
-                while (!stack.empty()) {
-                    const Location current = stack.back();
-                    stack.pop_back();
-                    size_t current_x = current.x;
-                    size_t current_y = current.y;
-                    if (grid[current_y][current_x] == '.') continue;
-                    assert(grid[current_y][current_x] == looking);
-
-                    grid[current_y][current_x] = '.';
-                    region_map[current_y * grid_width + current_x] = regions.size();
-                    assert(surrounded != regions.size());
-
-                    area += 1;
-
-                    if (in_bounds(grid, current_x - 1, current_y)) {
-                        if (grid[current_y][current_x - 1] == looking) { stack.push_back({current_x - 1, current_y}); }
-                        else {
-                            if (surrounded == static_cast<size_t>(-1) && region_map[current_y * grid_width + current_x - 1] != regions.size()) { surrounded = region_map[current_y * grid_width + current_x - 1]; }
-                            else { is_surrounded = is_surrounded && region_map[current_y * grid_width + current_x - 1] == surrounded; }
-                        }
-                    } else { is_surrounded = false; }
-                    if (in_bounds(grid, current_x + 1, current_y)) {
-                        if (grid[current_y][current_x + 1] == looking) { stack.push_back({current_x + 1, current_y}); }
-                        else {
-                            if (surrounded == static_cast<size_t>(-1) && region_map[current_y * grid_width + current_x + 1] != regions.size()) { surrounded = region_map[current_y * grid_width + current_x + 1]; }
-                            else { is_surrounded = is_surrounded && region_map[current_y * grid_width + current_x + 1] == surrounded; }
-                        }
-                    } else { is_surrounded = false; }
-                    if (in_bounds(grid, current_x, current_y - 1)) {
-                        if (grid[current_y - 1][current_x] == looking) { stack.push_back({current_x, current_y - 1}); }
-                        else {
-                            if (surrounded == static_cast<size_t>(-1) && region_map[(current_y - 1) * grid_width + current_x] != regions.size()) { surrounded = region_map[(current_y - 1) * grid_width + current_x]; }
-                            else { is_surrounded = is_surrounded && region_map[(current_y - 1) * grid_width + current_x] == surrounded; }
-                        }
-                    } else { is_surrounded = false; }
-                    if (in_bounds(grid, current_x, current_y + 1)) {
-                        if (grid[current_y + 1][current_x] == looking) { stack.push_back({current_x, current_y + 1}); }
-                        else {
-                            if (surrounded == static_cast<size_t>(-1) && region_map[(current_y + 1) * grid_width + current_x] != regions.size()) { surrounded = region_map[(current_y + 1) * grid_width + current_x]; }
-                            else { is_surrounded = is_surrounded && region_map[(current_y + 1) * grid_width + current_x] == surrounded; }
-                        }
-                    } else { is_surrounded = false; }
-                }
+                } while (!(cx == static_cast<int>(x) && cy == static_cast<int>(y) && direction == 0));
 
                 if (is_surrounded) {
                     // We need to go update the region we surround with our turns and perimeter as it encloses us
@@ -194,12 +194,15 @@ int day12_2024(const std::string& input, std::ostream& output) {
     size_t part1 = 0;
     size_t part2 = 0;
     for (const auto& region : regions) {
-        output << "A region of " << region.repr << " plants with price " << region.area << " * " << region.perimeter << " = " << region.area * region.perimeter << std::endl;
+        output << "A region of " << region.repr << " plants with price " << region.area << " * " << region.perimeter << " = " << region.area * region.perimeter << " (and side count " << region.turns << ")" << std::endl;
         part1 += region.area * region.perimeter;
         part2 += region.area * region.turns;
     }
 
     output << "Part 1: " << part1 << std::endl; // 1485656
+    // Not 1474630
+    // Not 1480060
+
     output << "Part 2: " << part2 << std::endl;
     // 894924 -- too low
 
