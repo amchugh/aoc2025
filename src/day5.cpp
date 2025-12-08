@@ -3,7 +3,7 @@
 #include <string>
 #include <ostream>
 
-#include "my_util.h"
+#include "my_util.hpp"
 
 struct range_t {
     long begin;

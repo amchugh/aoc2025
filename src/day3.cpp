@@ -3,7 +3,7 @@
 #include <ostream>
 #include <string>
 
-#include "my_util.h"
+#include "my_util.hpp"
 
 size_t find_largest(const std::string& str, size_t start_idx, size_t end_idx) {
     assert(start_idx < str.size());

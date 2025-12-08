@@ -16,7 +16,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Add common compiler flags
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Wno-vla-cxx-extension")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Wno-vla-extension")
 
 # Add compiler flags for debug builds
 set(CMAKE_CXX_FLAGS_DEBUG "-g3 -O0")

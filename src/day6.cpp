@@ -3,7 +3,7 @@
 #include <string>
 #include <ostream>
 
-#include "my_util.h"
+#include "my_util.hpp"
 
 int day6(const std::string& input, std::ostream& output) {
     const auto lines = to_lines(input);

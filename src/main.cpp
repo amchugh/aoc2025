@@ -7,7 +7,7 @@
 #include <fstream>
 #include <cmath>
 
-#include "my_util.h"
+#include "my_util.hpp"
 
 int day1(const std::string&, std::ostream&);
 int day2(const std::string&, std::ostream&);
@@ -16,6 +16,9 @@ int day4(const std::string&, std::ostream&);
 int day5(const std::string&, std::ostream&);
 int day6(const std::string&, std::ostream&);
 int day7(const std::string&, std::ostream&);
+
+int day12_2024(const std::string&, std::ostream&);
+int day17_2024(const std::string&, std::ostream&);
 
 int profile_all_days(auto target_duration) {
     constexpr size_t NUM_DAYS = 7;
@@ -125,6 +128,8 @@ int main(int argc, char* argv[]) {
     else if (day_number == 5) fn = day5;
     else if (day_number == 6) fn = day6;
     else if (day_number == 7) fn = day7;
+    else if (day_number == 172024) fn = day17_2024;
+    else if (day_number == 122024) fn = day12_2024;
     else {
         std::cerr << "Invalid arguments. Day " << day_number << " is not a valid day." << std::endl;
         return 1;

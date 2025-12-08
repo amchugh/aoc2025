@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 
-#include "my_util.h"
+#include "my_util.hpp"
 
 int is_symmetric(const std::string& x) {
     // Not symmetric if odd-lengthed

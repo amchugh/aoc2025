@@ -4,3 +4,7 @@ resources/*.txt
 FlameGraph/
 sample.output
 flamegraph.svg
+*.dSYM/*
+*.out
+test_*.cpp
+.DS_Store

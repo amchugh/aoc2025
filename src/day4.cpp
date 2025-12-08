@@ -7,7 +7,7 @@ int safe_get(const std::string& input, int width, int height, int x, int y) {
     return input[y * (width + 1) + x] == '@';
 }
 
-int reduce(const std::string* input, std::string* output, int width, int height) {
+int my_reduce(const std::string* input, std::string* output, int width, int height) {
     // Clone
     *output = *input;
 
@@ -42,14 +42,14 @@ int day4(const std::string& input, std::ostream& output) {
     current = &a;
     next = &b;
 
-    size_t part1 = reduce(current, next, width, height);
+    size_t part1 = my_reduce(current, next, width, height);
 
     size_t part2 = 0;
     size_t reduced_last = part1;
     while (reduced_last > 0) {
         part2 += reduced_last;
         std::swap(current, next);
-        reduced_last = reduce(current, next, width, height);
+        reduced_last = my_reduce(current, next, width, height);
     }
 
     output << "Part 1: " << part1 << std::endl; // 1478
