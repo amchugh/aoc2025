@@ -16,6 +16,7 @@ int day4(const std::string&, std::ostream&);
 int day5(const std::string&, std::ostream&);
 int day6(const std::string&, std::ostream&);
 int day7(const std::string&, std::ostream&);
+int day9(const std::string&, std::ostream&);
 
 int day12_2024(const std::string&, std::ostream&);
 int day17_2024(const std::string&, std::ostream&);
@@ -129,6 +130,7 @@ int main(int argc, char* argv[]) {
     else if (day_number == 5) fn = day5;
     else if (day_number == 6) fn = day6;
     else if (day_number == 7) fn = day7;
+    else if (day_number == 9) fn = day9;
     else if (day_number == 172024) fn = day17_2024;
     else if (day_number == 122024) fn = day12_2024;
     else if (day_number == 242024) fn = day24_2024;
