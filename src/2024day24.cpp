@@ -3,9 +3,7 @@
 #include <cassert>
 #include <cstring>
 #include <format>
-#include <iomanip>
 #include <string>
-#include <sstream>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -16,7 +14,7 @@ enum operation_t {
     AND,
     OR,
 };
-char* OPERATIONS[] = {"XOR", "AND", "OR"};
+const char* OPERATIONS[] = {"XOR", "AND", "OR"};
 
 struct Gate {
     std::string a;
@@ -76,7 +74,7 @@ unsigned long evaluate(std::unordered_map<std::string, bool> wires, std::vector<
 
 std::unordered_map<std::string, bool> numbers_to_gates(unsigned long x, unsigned long y) {
     std::unordered_map<std::string, bool> gates;
-    for (int idx = 0; idx < BITS; idx++) {
+    for (size_t idx = 0; idx < BITS; idx++) {
         std::string wire_name_x = std::format("x{:02}", idx);
         gates[wire_name_x] = (x >> idx) & 1;
 

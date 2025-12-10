@@ -1,10 +1,7 @@
 
 #include <cassert>
-#include <iomanip>
 #include <string>
 #include <sstream>
-
-#include "my_util.hpp"
 
 typedef long long program_t;
 

@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "my_util.hpp"
-
 struct Vertical {
     int x;
     int ylow;
@@ -35,8 +33,6 @@ int day9(const std::string& input, std::ostream& output) {
 
     output << "Part 1: " << part1 << std::endl; // 4749929916
     assert(part1 == 4749929916);
-
-
 
     return 1;
 }

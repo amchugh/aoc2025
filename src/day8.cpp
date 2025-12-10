@@ -119,7 +119,7 @@ int day8(const std::string& input, std::ostream& output) {
         std::pop_heap(smallest_distances.begin(), end, comp);
         end--;
 
-        auto _ = connect(
+        (void) connect(
             r,
             region_map, region_sizes,
             regions, region_num, count
